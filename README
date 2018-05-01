@@ -1,0 +1,169 @@
+SynFuse README file
+
+
+Author: Mark Forteza (mforteza@sfu.ca)
+
+Last revised: April 30, 2018
+
+
+
+The pipeline is divided into four processes/scripts:
+	1. gene similarity computations via genFamClust
+	2. identifying candidate cluster pairs
+	3. silhouette computations
+	4. FDR calculation
+
+
+Required: python 3.6, java 1.7, 
+	BLAST+ package 	
+	genfamclust-1.0.1 by Ali, Khan and Arvestad		(https://code.google.com/archive/p/genfamclust/)
+	neighbourhood_correlation-2.1 by Song, et al.	(http://www.neighborhoodcorrelation.org/)
+
+
+########################################
+
+1. Gene Similarity
+
+This part needs more work to turn it into a single executable. For now we provide instructions for running the genFamClust program. I suggest reading this section first before the genFamClust documentation.
+
+Input: 
+	- list of protein sequences for every gene in each species
+	- gene location file (all_gene_file)
+Output:
+	- translated genFamClust neighbourhood correlation file
+
+
+
+Protein sequences must be in FASTA format. If the sequence for a gene is broken into multiple lines, run
+
+	$ awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < fasta file > < new fasta > 
+
+on the command line. The script "makeSequence.py" prepares genFamClust inputs.
+
+
+###############
+makeSequence.py
+
+Arguments:
+Input:  
+    1. File with two columns: species name, and path to fasta file 
+            of the corresponding species.
+       Fasta files must be in standard fasta format, but with one 
+            line for each nucleotide sequence.
+        
+    2. ALL_GENE_file, containing position of genes on their contig
+
+Output: 
+    3. Sequence File (*.fasta) :
+        List with two columns, tab delimited. First columnn for gene name, 
+        second column for full sequence.
+    4. Synteny File (*.hsf):
+        List with four columns, tab delimited. Format: 
+        [species name, chromosome name, gene name, position on chromosome]
+
+
+Python scripts should called with the respective listed arguments in numerical order.
+
+	
+	
+We run the some parts of genFamClust to compute sequence similarities. In particular, we are interested in a neighbourhood correlation (GenFam.nnc) output. Please see the genFamClust documentation for installation instructions. Then run the following:
+
+	$ java -Xmx2000m -Xms1800m -jar genfamclust-1.0.1.jar DataPreparator -p <path to output folder> <fasta file> <hsf file>
+
+	$ java -Xmx2000m -Xms1800m -jar genfamclust-1.0.1.jar BlastModule -p <path to output folder> -rp <path to blast program> GenFam.fasta 
+
+	$ java -Xmx2000m -Xms1800m -jar genfamclust-1.0.1.jar NeighborhoodCorrelation -p <path to output folder> -rp <path to nbrhood correlation> GenFam.bl
+
+
+Finally, translate GenFam.nnc to the proper gene names.
+
+translateGenFam.py
+
+Arguments:
+Input: 
+	1. GenFam.fasta (output of genFamClust)
+	2. sequence fasta file (input of genFamClust)
+	3. GenFam.nnc
+Output:
+	4. translated nnc file
+
+
+
+#####################################################
+
+2. Candidate cluster pairs
+
+Indentify pairs of gene families which exhibits particular synteny conservation signals. Two types of candidates:
+	A. shared neighbors. Two families F1 and F2, spanning disjoint sets of species, with some members having a neighbor from anothr family F3. The smaller family must span up to 6 species.  
+	B. tandem duplicates. Two families which are syntenic in multiple species. The smaller family must be in at least 5 species, and the ratio of observed synteny conservation to size of the smaller family at 0.8. 
+
+#############
+candidates.py
+
+Arguments:
+Input: 
+	1. all gene file. Contains initial clustering and gene location information
+Output:
+	2. candidate pairs
+
+
+
+
+#######################################################
+
+3. Silhouette 
+
+Compute the silhouette before and after joining candidate families. Also computes shuffled graphs for FDR null hypothesis. 
+
+#############
+silhouette.py
+
+Arguments:
+Input:
+	1. translated GenFam scores
+	2. all gene file
+	3. candidate pairs
+Output:
+	4. initial cluster silhouette
+	5. joined cluster silhouette
+	6. shuffled cluster silhouette 
+	7. joined shuffled cluster silhouette 
+
+
+
+#########################################################
+
+4. FDR analysis
+
+#############
+computeFDR.py
+
+Arguments:
+Input:
+	1. joined cluster silhouette
+	2. joined shuffled cluster silhouette 
+	3. FDR percentage
+Output:
+	4. accepted cluster pairs
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
