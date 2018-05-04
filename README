@@ -62,11 +62,13 @@ Output:
         [species name, chromosome name, gene name, position on chromosome]
 
 
-Python scripts should called with the respective listed arguments in numerical order.
+Python scripts should be called with the listed arguments in numerical order, e.g.
+
+	$ python makeSequence.py <1> <2> <3> <4>
 
 	
 	
-We run the some parts of genFamClust to compute sequence similarities. In particular, we are interested in a neighbourhood correlation (GenFam.nnc) output. Please see the genFamClust documentation for installation instructions. Then run the following:
+We run the some parts of genFamClust to compute sequence similarities. In particular, we are interested in a neighbourhood correlation (NC) scores. Please see the genFamClust documentation for installation instructions. Then run the following:
 
 	$ java -Xmx2000m -Xms1800m -jar genfamclust-1.0.1.jar DataPreparator -p <path to output folder> <fasta file> <hsf file>
 
@@ -75,7 +77,7 @@ We run the some parts of genFamClust to compute sequence similarities. In partic
 	$ java -Xmx2000m -Xms1800m -jar genfamclust-1.0.1.jar NeighborhoodCorrelation -p <path to output folder> -rp <path to nbrhood correlation> GenFam.bl
 
 
-Finally, translate GenFam.nnc to the proper gene names.
+This outputs a GenFam.nnc which contains a list with three columns. Two columns are for temporary gene names used by genFamClust and the last for the NC score between the two genes. NC scores range from 0 to 1, where 1 is highest. Gene pairs are only reported if the NC score is above a threshold of 0.3. Finally, translate GenFam.nnc to the proper gene names.
 
 translateGenFam.py
 
@@ -85,7 +87,7 @@ Input:
 	2. sequence fasta file (input of genFamClust)
 	3. GenFam.nnc
 Output:
-	4. translated nnc file
+	4. translated GenFam.nnc file
 
 
 
@@ -107,6 +109,7 @@ Output:
 	2. candidate pairs
 
 
+The output file is a list with two columns, containing the names of the two families identified as candidates.
 
 
 #######################################################
@@ -130,6 +133,34 @@ Output:
 	7. joined shuffled cluster silhouette 
 
 
+Ouputs 4 and 6 are tables in the following format:
+
+[family 	 num_vertices 	 num_edges 	 min,max,ave silhouette	 gene silhouette]
+
+where
+"family" is the name of the gene family. 
+"num_vertices" is the number of genes in the family. 
+"num_edges" is the number of gene pairs within the family whose similarity is reported in part 1. 
+"min,max,ave silhouette" are min max and average computed silhouette among members of the family.
+"gene silhouette" is a list of the gene members and their individual silhouettes.
+
+Silhouette scores range from -1 to 1, where a higher score means that genes inside the cluster are similar to each other and not similar to genes from different clusters.
+
+
+Outputs 5 and 7 is in the format:
+
+[F1 	 F2 	 num_edges_between 	 s1 	 s2 	 s12 	 s 	 d]
+
+where
+"F1" and "F2" are the names of the two families
+"num_edges_between" counts pairs of genes, one from each of F1 and F2, with significant similarity.
+"s1" and "s2" are the average silhouettes of F1 and F2, respectively.
+"s12" is the average of s1 and s2, scaled by size of the families.
+"s" is the silhouette after joining the two clusters.
+"d" is s-s12.
+
+The value of d is in the range [-2,2], where a higher score indicates an improvement in silhouette after joining the two clusters.
+
 
 #########################################################
 
@@ -142,11 +173,12 @@ Arguments:
 Input:
 	1. joined cluster silhouette
 	2. joined shuffled cluster silhouette 
-	3. FDR percentage
+	3. FDR percentage (value between 0 and 1)
 Output:
 	4. accepted cluster pairs
  
 
+The output is a list of accepted cluster pairs.
 
 
 

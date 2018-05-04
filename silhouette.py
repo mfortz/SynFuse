@@ -415,7 +415,7 @@ joinedOut = open(sys.argv[5],'w')
 
 #collect family pairs in a list
 pairsList = []
-for l in pairsFile:
+for l in pairsFile[1:]:
     x = l.split()
     pairsList.append((x[0],x[1]))
 
@@ -428,6 +428,7 @@ for l in silhouetteIn[1:]:
     famSilhouette[fam] = ncSil
 
 computeJoinedSilhouette(pairsList,famSilhouette,joinedOut)
+
 
 
 
@@ -459,7 +460,7 @@ scoreDict= shuffleWeights(scoreDict,insideShuffled)
 computeAllFamSilhouette(membersList, numEdgesDict, silhouetteOutShuf)
 
 # Reload the just computed all fam silhouette file
-silhouetteInShuf = open(sys.argv[5],'r').readlines()
+silhouetteInShuf = open(sys.argv[6],'r').readlines()
 
 #find all fam pairs with an edge between
 pairsList = list(set(numEdgesDict.keys()))
