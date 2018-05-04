@@ -38,7 +38,12 @@ Protein sequences must be in FASTA format. If the sequence for a gene is broken 
 
 	$ awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < fasta file > < new fasta > 
 
-on the command line. The script "makeSequence.py" prepares genFamClust inputs.
+on the command line. The all_gene_file must be in a tab delimited table in the following format:
+
+	[species	ctg	gene_family	gene	gene_orientation	start_gene	end_gene	#exons	exons_position]
+
+
+The script "makeSequence.py" prepares genFamClust inputs.
 
 
 ###############
