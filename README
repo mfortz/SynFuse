@@ -34,11 +34,7 @@ Output:
 
 
 
-Protein sequences must be in FASTA format. If the sequence for a gene is broken into multiple lines, run
-
-	$ awk '/^>/ {printf("\n%s\n",$0);next; } { printf("%s",$0);}  END {printf("\n");}' < fasta file > < new fasta > 
-
-on the command line. The all_gene_file must be in a tab delimited table in the following format:
+Protein sequences must be in FASTA format. The all_gene_file must be in a tab delimited table in the following format:
 
 	[species	ctg	gene_family	gene	gene_orientation	start_gene	end_gene	#exons	exons_position]
 
@@ -102,16 +98,20 @@ Output:
 
 Indentify pairs of gene families which exhibits particular synteny conservation signals. Two types of candidates:
 	A. shared neighbors. Two families F1 and F2, spanning disjoint sets of species, with some members having a neighbor from anothr family F3. The smaller family must span up to 6 species.  
-	B. tandem duplicates. Two families which are syntenic in multiple species. The smaller family must be in at least 5 species, and the ratio of observed synteny conservation to size of the smaller family at 0.8. 
+	B. tandem duplicates. Two families which are syntenic in multiple species. 
 
 #############
 candidates.py
 
 Arguments:
 Input: 
-	1. all gene file. Contains initial clustering and gene location information
+	1. all gene file. Contains initial clustering and gene location information.
 Output:
 	2. candidate pairs
+
+Optional Input:
+	3. maximum number of species spanned by the smaller family in shared neigbor candidates. Default 6.
+	4. minimum number of species spanned by the smaller family in tandem duplicates. Default 5.
 
 
 The output file is a list with two columns, containing the names of the two families identified as candidates.

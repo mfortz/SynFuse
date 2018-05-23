@@ -22,35 +22,36 @@ candidatesOut.write("F1 \t F2_gene \n")
 nonEmptySpecies = {}
 
 
-'''
-Additional parameters. Uncomment if necessary.
 
-### Shared neighbours    
-num_species_spanned_by_f1 = int(sys.argv[3])
-if num_species_spanned_by_f1 < 2:
-    print("Error. Max size must be >= 2.")
-    sys.exit()
-
-### Tandem duplicates
-min_species_spanned_by_f1 = int(sys.argv[4])
-if min_species_spanned_by_f1 < 2:
-    print("Error. Max size must be >= 2.")
-    sys.exit()
+### Shared neighbours  
+if len(sys.argv) > 2:  
+    num_species_spanned_by_f1 = int(sys.argv[3])
+    if num_species_spanned_by_f1 < 2:
+        print("Error. Max size must be >= 2.")
+        sys.exit()
     
-ratioIn = float(sys.argv[5])
-
+    ### Tandem duplicates
+    min_species_spanned_by_f1 = int(sys.argv[4])
+    if min_species_spanned_by_f1 < 2:
+        print("Error. Max size must be >= 2.")
+        sys.exit()
+else :
+    ### Shared neighbours    
+    num_species_spanned_by_f1 = 6
+    
+    ### Tandem duplicates
+    min_species_spanned_by_f1 = 5
+    
+    
 '''
+Additional parameters. Uncomment if necessary.  
 
 
-### Shared neighbours    
-num_species_spanned_by_f1 = 6
 
-### Tandem duplicates
-min_species_spanned_by_f1 = 5
-
+ratioIn = float(sys.argv[5])
+'''
 ### Ratio of synteny observed vs size of smaller family
 ratioIn = 0.8 
-
 
 
 
