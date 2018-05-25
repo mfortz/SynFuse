@@ -12,35 +12,32 @@ import sys
 
 #input observed (candidate) and null (shuffled) scores
 observedIn = open(sys.argv[1],'r').readlines()
-nullIn = open(sys.argv[2],'r').readlines()
-
+nullIn     = open(sys.argv[2],'r').readlines()
 #set FDR
 setFDR = float(sys.argv[3])
-
 #output accepted pairs
 outputFile = open(sys.argv[4],'w')
 
 observedScores = []
-for l in observedIn[1:]:
-    x = l.split()
-    d = float(x[7])
-    observedScores.append(d)
+for l in observedIn:
+    if l[0]!='#':
+        x = l.split()
+        d = float(x[7])
+        observedScores.append(d)
     
 nullScores = []
-for l in nullIn[1:]:
-    x = l.split()
-    d = float(x[7])
-    nullScores.append(d)
+for l in nullIn:
+    if l[0]!='#':
+        x = l.split()
+        d = float(x[7])
+        nullScores.append(d)
 
 #data set sizes
 b = len(observedScores)
 n = len(nullScores)
 
-
 observedScores.sort(reverse = True)
 nullScores.sort(reverse = True)
-
-
 
 def computeFDR(current_t, previousScores_n, previousScores_b):
     #take scores above threshold
@@ -69,7 +66,6 @@ def computeFDR(current_t, previousScores_n, previousScores_b):
     currentFDR = (s_n/s_b) * (b/n)
     return currentFDR, trimmed_n, trimmed_b
 
-
 # compute t that satisfies setFDR
 trimmed_n = [z for z in nullScores]
 trimmed_b = [z for z in observedScores]
@@ -88,16 +84,16 @@ tOut = "%.4f" % (t-0.001)
 print("Computed treshold t = " + tOut + " with FDR = " + fdrOut +"%")
 print("Observed "+ str(len(trimmed_b)) + " pairs above threshold.")
 
-
 acceptedPairs = []
 
 #find accepted family pairs
-for l in observedIn[1:]:
-    x = l.split()
-    d = float(x[7])
-    if d <= (t-0.001):
-        pair = (x[0],x[1])
-        acceptedPairs.append(pair)
+for l in observedIn:
+    if l[0]!='#':
+        x = l.split()
+        d = float(x[7])
+        if d <= (t-0.001):
+            pair = (x[0],x[1])
+            acceptedPairs.append(pair)
 
 for p in acceptedPairs:
     outputFile.writelines([p[0],'\t',p[1],'\n'])

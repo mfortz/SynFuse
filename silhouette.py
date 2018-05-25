@@ -22,7 +22,6 @@ import sys, random
 from deriveGeneStructure import deriveGeneStructure
 #from silhouette_functions import clusterSilhouette
 
-
 """Helper functions"""
 
 # Create dictionary that maps gene pairs to NC scores
@@ -30,14 +29,14 @@ def createScoreDict(scoreFile):
     scoreDict = {}
     
     for l in scoreFile:
-        x = l.split()
-        g1 = x[0]
-        g2 = x[1]
-        NC = float(x[2])
-        scoreDict[(g1,g2)] = NC
+        if l[0]!='#':
+            x = l.split()
+            g1 = x[0]
+            g2 = x[1]
+            NC = float(x[2])
+            scoreDict[(g1,g2)] = NC
     
     return scoreDict
-
 
 #Create dictionary that maps family pairs to edges between them
 #Note that GenFam.syc contains two entries for each pair: (g1,g2) and (g2,g1). 
@@ -167,10 +166,9 @@ def clusterSilhouette(family, joinedFams=None):
     
     return NCsil, valuesOutNC
 
-
 """Computes silhouettes for each family and prints output"""
 def computeAllFamSilhouette(membersList, numEdgesDict, ncOut):
-    ncOut.write("family \t num_vertices \t num_edges \t min,max,ave silhouette")
+    ncOut.write("#family \t num_vertices \t num_edges \t min,max,ave silhouette")
     ncOut.write("\t gene silhouette \n")
 
     for famName in data.familiesDict:
@@ -203,11 +201,10 @@ def computeAllFamSilhouette(membersList, numEdgesDict, ncOut):
     #close to ensure all outputs are printed
     ncOut.close() 
 
-
 """Join families, compute silhouette, and print output"""
 def computeJoinedSilhouette(pairsList, famSilhouette, ncOut):
     # print header
-    ncOut.write("F1 \t F2 \t num_edges_between \t s1 \t s2 \t s12 \t s \t d \n")
+    ncOut.write("#F1 \t F2 \t num_edges_between \t s1 \t s2 \t s12 \t s \t d \n")
     
     global membersList
     
@@ -230,7 +227,6 @@ def computeJoinedSilhouette(pairsList, famSilhouette, ncOut):
         del revisedMembersList[f2]
     
         return revisedMembersList
-
 
     #Compute joined silhouettes
     for pair in pairsList:
@@ -284,7 +280,6 @@ def computeJoinedSilhouette(pairsList, famSilhouette, ncOut):
     #close to ensure all outputs are printed
     ncOut.close()
 
-
 """Shuffle edge weights"""
 
 #intercluster edges shuffled (not only weights)
@@ -297,8 +292,7 @@ def shuffleWeights(scoreDict,insideShuffled):
     interClusterWeights = []
     
     global data   
-    
-    
+        
     #record processed gene pairs
     doneDict = {}
     
@@ -328,7 +322,6 @@ def shuffleWeights(scoreDict,insideShuffled):
                 #avoid duplicate scores, i.e. score(x,y) and score(y,x)
                 doneDict[(x,y)] = None
                 doneDict[(y,x)] = None
-
     
     #shuffle edges
     shuffledScoreDict = {}
@@ -368,104 +361,90 @@ def shuffleWeights(scoreDict,insideShuffled):
         
     return shuffledScoreDict
 
-
 ###############################################################
 '''Main'''
 
+'''Parameters'''
 
+NC_SCORE_FILE        = sys.argv[1]
+GENE_FILE            = sys.argv[2]
+CANDIDATES_FILE      = sys.argv[3]
+NB_SAMPLES           = int(sys.argv[4])
+SILHOUETTE_ALL       = sys.argv[5]
+SILOUHETTE_JOINED    = sys.argv[6]
+SILOUHETTE_SH_ALL    = sys.argv[7]
+SILOUHETTE_SH_JOINED = sys.argv[8]
 
 '''all_families'''
 
 print("Computing initial clustering silhouette...")
 
 #input edge weights
-scoreFile = open(sys.argv[1], 'r').readlines()
+scoreFile = open(NC_SCORE_FILE, 'r').readlines()
 
 # load gene structure
-all_gene_file = open(sys.argv[2],'r').readlines()
+all_gene_file = open(GENE_FILE,'r').readlines()
 data, geneOrder = deriveGeneStructure(all_gene_file)
     
 #output all family silhouette 
-silhouetteOut = open(sys.argv[4],'w')
+silhouetteOut = open(SILHOUETTE_ALL,'w')
 
 membersList = createMembersList(data)
 scoreDict = createScoreDict(scoreFile)
 numEdgesDict = computeNumEdges(scoreDict)
 computeAllFamSilhouette(membersList, numEdgesDict, silhouetteOut)
 
-
-
 '''joined'''
 
 print("Computing joined cluster silhouettes...")
 
-#input computed all fam silhouette
-silhouetteIn = open(sys.argv[4],'r').readlines()    
-
 #input list of family pairs (eg candidates, null pairs)
-pairsFile = open(sys.argv[3],'r').readlines()
-    
+pairsFile = open(CANDIDATES_FILE,'r').readlines()
+#input computed all fam silhouette
+silhouetteIn = open(SILHOUETTE_ALL,'r').readlines()    
 #output all family silhouette 
-joinedOut = open(sys.argv[5],'w')
-
-
-#membersList = createMembersList(data)
-#scoreDict = createScoreDict(scoreFile)
-#numEdgesDict = computeNumEdges(scoreDict)
+joinedOut = open(SILHOUETTE_JOINED,'w')
 
 #collect family pairs in a list
 pairsList = []
-for l in pairsFile[1:]:
-    x = l.split()
-    pairsList.append((x[0],x[1]))
+for l in pairsFile:
+    if l[0]!='#':
+        x = l.split()
+        pairsList.append((x[0],x[1]))
 
 #dictionary that maps family name to ave nc silhouette
 famSilhouette = {}
-for l in silhouetteIn[1:]:
-    x = l.split()
-    fam = x[0]
-    ncSil = float(x[5])   #ave nc silhouette
-    famSilhouette[fam] = ncSil
+for l in silhouetteIn:
+    if l[0]!='#':
+        x = l.split()
+        fam = x[0]
+        ncSil = float(x[5])   #ave nc silhouette
+        famSilhouette[fam] = ncSil
 
 computeJoinedSilhouette(pairsList,famSilhouette,joinedOut)
 
-
-
-
 '''shuffled'''
 
-print("Shuffling edges")
-
-    
-#record shuffled edge weights
-#weightsOutShuf = open(sys.argv[4],'w')
+print("Shuffling edges...")
 
 #output all family silhouette 
-silhouetteOutShuf = open(sys.argv[6],'w')
-
-#output joined family silhouette
-joinedOutShuf = open(sys.argv[7],'w')
-
-
-# Shuffle intra cluster weights? 
-insideShuffled = 1
-
-
-#shuffle weights 
+silhouetteOutShuf = open(SILHOUETTE_SH_ALL,'w')
+# Shuffle weights 
+insideShuffled = 1 # Shuffle intra cluster weights? 
 scoreDict= shuffleWeights(scoreDict,insideShuffled)
-#for f1, f2 in scoreDict:
-#    w = str(scoreDict[(f1,f2)])
-#    weightsOutShuf.writelines([f1,'\t',f2,'\t',w,'\n'])
 
+print("Computing silhouette of shuffled clusters...")
+# Compute silhouettes of shuffled clusters
 computeAllFamSilhouette(membersList, numEdgesDict, silhouetteOutShuf)
 
+print("Computing silhouette of joined shuffled clusters...")
 # Reload the just computed all fam silhouette file
-silhouetteInShuf = open(sys.argv[6],'r').readlines()
+silhouetteInShuf = open(SILHOUETTE_SH_ALL,'r').readlines()
 
-#find all fam pairs with an edge between
+# Find all fam pairs with an edge between
 pairsList = list(set(numEdgesDict.keys()))
 
-#eliminate intracluster entries
+# Eliminate intracluster entries
 tempList = []
 for x,y in pairsList:
     if x != y:
@@ -484,20 +463,19 @@ for x,y in pairsList:
         tempList.append((x,y))
 pairsList = list(tempList)
         
-
 #dictionary that maps family name to ave silhouette
 famSilhouetteShuf = {}
-for l in silhouetteInShuf[1:]:
-    x = l.split()
-    fam = x[0]
-    ncSil = float(x[5])   #ave nc silhouette
-    famSilhouetteShuf[fam] = ncSil
+for l in silhouetteInShuf:
+    if l[0]!='#':
+        x = l.split()
+        fam = x[0]
+        ncSil = float(x[5])   #ave nc silhouette
+        famSilhouetteShuf[fam] = ncSil
 
 #try not to hard code this    
-pairsList = random.sample(pairsList,5000)
+pairsList = random.sample(pairsList,NB_SAMPLES)
 
-computeJoinedSilhouette(pairsList,famSilhouetteShuf,joinedOutShuf)   
-
-
-
-
+#output joined family silhouette
+joinedOutShuf = open(SILHOUETTE_SH_JOINED,'w')
+#compute silhouette
+computeJoinedSilhouette(pairsList,famSilhouetteShuf,joinedOutShuf)

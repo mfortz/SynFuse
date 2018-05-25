@@ -9,7 +9,6 @@ Created on Wed Jul 26 19:00:24 2017
 @author: mfortz
 """
 
-
 def deriveGeneStructure(all_gene_file):
     
     """
@@ -21,15 +20,14 @@ def deriveGeneStructure(all_gene_file):
 
     from DataSet import DataSet
     from GeneFamily import GeneFamily
-    
-    
+        
     """Create all Gene objects"""
     data = DataSet()
     
-    for l in all_gene_file[1:]:
-        data.addGene(l.split())
-    
-    
+    for l in all_gene_file:
+        if l[0]!='#':
+            data.addGene(l.split())
+        
     """Create a list of Species"""
     def generateSpeciesDict():
         for g in data.genesDict:
@@ -38,8 +36,7 @@ def deriveGeneStructure(all_gene_file):
                 data.addSpecies(currentSpecies)
                 
     generateSpeciesDict()
-    
-    
+        
     """Make Family Dictionary"""
     def generateFamilyDict():
         for g in data.genesDict:
@@ -51,12 +48,9 @@ def deriveGeneStructure(all_gene_file):
             else:
                 currentFamily = data.familiesDict[currentGene.family]
             currentFamily.addToFamily(currentGene)
-    
-    
+        
     generateFamilyDict()
-    
-    
-    
+            
     """Make a dictionary which gives information about gene order """
 
     geneOrder = {}
@@ -69,14 +63,12 @@ def deriveGeneStructure(all_gene_file):
             geneOrder[currentGene.species][currentGene.ctg].append(currentGene)   #pass gene object
         except KeyError:
             geneOrder[currentGene.species][currentGene.ctg] = [currentGene]
-    
-            
+                
     #sort genes in their contig
     for s in geneOrder:
         for c in geneOrder[s]:
             geneOrder[s][c].sort(key = lambda gene: int(gene.start))
-    
-    
+        
     return data, geneOrder
     
     
