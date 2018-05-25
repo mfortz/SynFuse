@@ -37,8 +37,7 @@ if len(sys.argv) > 2:
     ratioIn = float(sys.argv[5])
     if ratioIn > 1 or ratioIn < 0:
         print("Error. RatioIn must be in [0,1].")
-        sys.exit()
-    
+        sys.exit()    
 else :
     ### Shared neighbours    
     num_species_spanned_by_f1 = 5
@@ -50,6 +49,8 @@ else :
 ########################################
 # Tandem Duplicates
 ########################################
+
+print("Finding tandem duplicates candidates...")
 
 for fam in data.familiesDict:
     nonEmptySpecies[fam] = 0    
@@ -124,6 +125,8 @@ for f1,f2 in Result:
 ##########################################
 # Shared Neighbour
 ##########################################
+
+print("Finding shared neighbours candidates...")
 
 def findFamilyInXSpecies(x,q):
 
