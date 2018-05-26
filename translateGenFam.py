@@ -37,6 +37,7 @@ for l in scoreFile:
         g1 = geneName[x[0]]
         g2 = geneName[x[1]]
         nc = x[2]
-        sc = x[3]
-    
-    translatedScoreFile.writelines([g1,'\t',g2,'\t',nc,'\t',sc,'\n'])
+    translatedScoreFile.writelines([g1,'\t',g2,'\t',nc,'\n'])
+#        sc = x[3]
+#    translatedScoreFile.writelines([g1,'\t',g2,'\t',nc,'\t',sc,'\n'])
+
