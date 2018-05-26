@@ -371,9 +371,9 @@ GENE_FILE            = sys.argv[2]
 CANDIDATES_FILE      = sys.argv[3]
 NB_SAMPLES           = int(sys.argv[4])
 SILHOUETTE_ALL       = sys.argv[5]
-SILOUHETTE_JOINED    = sys.argv[6]
-SILOUHETTE_SH_ALL    = sys.argv[7]
-SILOUHETTE_SH_JOINED = sys.argv[8]
+SILHOUETTE_JOINED    = sys.argv[6]
+SILHOUETTE_SH_ALL    = sys.argv[7]
+SILHOUETTE_SH_JOINED = sys.argv[8]
 
 '''all_families'''
 
