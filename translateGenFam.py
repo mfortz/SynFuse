@@ -6,13 +6,12 @@ translateGenFam.py
 
 Translate genFamClust index names to true gene names
 
-
 @author: mfortz
 """
 
-
 import sys
 
+<<<<<<< HEAD
 
 
 # hsf input file to genFamClust
@@ -76,6 +75,22 @@ for l in syntenyFile[1:]:
         oldCtg = ctg
     else:     
         z += 1
+=======
+# GenFam.fasta file
+GenFam_fasta = open(sys.argv[1], 'r').readlines()
+# input file to genFamClust
+sequence_fa = open(sys.argv[2], 'r').readlines()
+# GenFam.syc  or GenFam.nnc file
+scoreFile = open(sys.argv[3],'r').readlines()
+# Output file
+translatedScoreFile = open(sys.argv[4],'w')
+
+geneName = {}
+numGenes = len(sequence_fa)//2
+for i in range(numGenes):
+    indexName = GenFam_fasta[2*i]
+    indexName = indexName.strip()[1:]
+>>>>>>> bcc42b85afcbbac3bc8f283eca437a8354e25873
     
     # record translated name
     indexName = str(x)+'.'+str(y)+'.'+str(z)
@@ -83,13 +98,13 @@ for l in syntenyFile[1:]:
     
     print(indexName, oldSpecies, oldCtg)
     
-
-
 for l in scoreFile:
-    x = l.split()
-    g1 = geneName[x[0]]
-    g2 = geneName[x[1]]
-    nc = x[2]
-    sc = x[3]
-    
-    translatedScoreFile.writelines([g1,'\t',g2,'\t',nc,'\t',sc,'\n'])
+    if l[0]!='#':
+        x = l.split()
+        g1 = geneName[x[0]]
+        g2 = geneName[x[1]]
+        nc = x[2]
+    translatedScoreFile.writelines([g1,'\t',g2,'\t',nc,'\n'])
+#        sc = x[3]
+#    translatedScoreFile.writelines([g1,'\t',g2,'\t',nc,'\t',sc,'\n'])
+
