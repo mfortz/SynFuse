@@ -84,11 +84,10 @@ translateGenFam.py
 
 Arguments:
 Input: 
-	1. GenFam.fasta (output of genFamClust)
-	2. sequence fasta file (input of genFamClust)
-	3. GenFam.nnc
+	1. synteny file (input of genFamClust, in hsf file format)
+	2. GenFam.nnc
 Output:
-	4. translated GenFam.nnc file
+	3. translated GenFam.nnc file
 
 
 
