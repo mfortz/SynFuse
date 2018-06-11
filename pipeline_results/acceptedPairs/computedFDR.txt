@@ -1,0 +1,31 @@
+
+Computed treshold t = 0.2650 with FDR = 0.9024%
+Observed 411 pairs above threshold.
+
+Computed treshold t = 0.1640 with FDR = 1.9972%
+Observed 520 pairs above threshold.
+
+Computed treshold t = 0.1170 with FDR = 2.9315%
+Observed 582 pairs above threshold.
+
+Computed treshold t = 0.1040 with FDR = 3.9171%
+Observed 606 pairs above threshold.
+
+Computed treshold t = 0.0990 with FDR = 4.8326%
+Observed 614 pairs above threshold.
+
+Computed treshold t = 0.0870 with FDR = 5.9578%
+Observed 635 pairs above threshold.
+
+Computed treshold t = 0.0780 with FDR = 6.9938%
+Observed 647 pairs above threshold.
+
+Computed treshold t = 0.0630 with FDR = 7.8313%
+Observed 682 pairs above threshold.
+
+Computed treshold t = -0.0210 with FDR = 8.9859%
+Observed 2394 pairs above threshold.
+
+Computed treshold t = -0.0340 with FDR = 9.9610%
+Observed 2532 pairs above threshold.
+
